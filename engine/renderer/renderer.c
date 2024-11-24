@@ -1,99 +1,55 @@
 #include "renderer.h"
 #include "glad/glad.h"
 
-const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
-    
-const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\0";
-
-
-
-
-void shader_use(Shader* shader) {
-    glUseProgram(shader->shaderProgram);
-}
-
-void init_render_data(Renderer* renderer) {
-    float init_vertices[9] = {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.0f,  0.5f, 0.0f
+void init_data(Renderer* renderer) {
+    float init_vertices[12 + 12 + 8] = {
+     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
     };
 
-    for(size_t i = 0; i < (sizeof(init_vertices) / sizeof(float)); ++i) {
-        renderer->render_data->vertices[i] = init_vertices[i];
-    }
+    size_t num_vertices = ARRAYSIZE(init_vertices);
+    renderer->render_data->vertices.data = (float*)malloc(num_vertices * sizeof(float));
+    renderer->render_data->vertices.length = num_vertices;
+    memcpy(renderer->render_data->vertices.data, init_vertices, num_vertices * sizeof(float));
+
+    unsigned int init_indices[6] = {
+        0, 1, 3,
+        1, 2, 3
+    };
+
+    size_t num_indices = ARRAYSIZE(init_indices);
+    renderer->render_data->indices.data = (unsigned int*)malloc(num_indices * sizeof(unsigned int));
+    renderer->render_data->indices.length = num_indices;
+    memcpy(renderer->render_data->indices.data, init_indices, num_indices * sizeof(unsigned int));
 }
 
-void render_init_buffers(Renderer* renderer) {
+void init_buffers(Renderer* renderer) {
     glGenBuffers(1, &renderer->buffers.VBO);
+    glGenBuffers(1, &renderer->buffers.EBO);
+
     glGenVertexArrays(1, &renderer->buffers.VAO);
-
     glBindVertexArray(renderer->buffers.VAO);
+
     glBindBuffer(GL_ARRAY_BUFFER, renderer->buffers.VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(renderer->render_data->vertices), renderer->render_data->vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glBufferData(GL_ARRAY_BUFFER, renderer->render_data->vertices.length * sizeof(float), renderer->render_data->vertices.data, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer->buffers.EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderer->render_data->indices.length * sizeof(unsigned int), renderer->render_data->indices.data, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 }
 
-
-void shader_compile(Shader* shader, const char* vertexShaderSource, const char* fragmentShaderSource) {
-    unsigned int vertexShader;
-    unsigned int fragmentShader;
-
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    int success = 0;
-    char* infoLog = (char*)malloc(sizeof(char) * 512);
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS ,&success);
-    if(!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        LOGERR("ERROR::SHADER::VERTEX::COMPILATION_FAILED");
-        fprintf(stderr, "%s\n", infoLog);
-    }
-
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if(!success) {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        LOGERR("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED");
-        fprintf(stderr, "%s\n", infoLog);
-    } 
-    
-    shader->shaderProgram = glCreateProgram();
-
-    glAttachShader(shader->shaderProgram, vertexShader);
-    glAttachShader(shader->shaderProgram, fragmentShader);
-    glLinkProgram(shader->shaderProgram);
-
-    glGetProgramiv(shader->shaderProgram, GL_LINK_STATUS, &success);
-    if(!success) {
-        glGetProgramInfoLog(shader->shaderProgram, 512, NULL, infoLog);
-        LOGERR("ERROR::SHADER::PROGRAMM::LINK_FAILED");
-        fprintf(stderr, "%s\n", infoLog);
-    }
-
-    free(infoLog);
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-}
-
-void render_init_shader(Renderer* renderer) {
-    shader_compile(&renderer->shader, vertexShaderSource, fragmentShaderSource);
+void init_shader(Renderer* renderer) {
+    loadShaders(&renderer->shader, "shaders/vertex_shader.glsl","shaders/fragment_shader.glsl");
 }
 
 void render_clear(Renderer* renderer) {
@@ -102,7 +58,14 @@ void render_clear(Renderer* renderer) {
 }
 
 void renderer_shutdown(Renderer* renderer) {
-    free(renderer->render_data->vertices);
+    glDeleteVertexArrays(1, &renderer->buffers.VAO);
+    glDeleteBuffers(1, &renderer->buffers.VBO);
+    glDeleteBuffers(1, &renderer->buffers.EBO);
+    free(renderer->render_data->vertices.data);
+}
+
+void init_texture(Renderer* renderer) {
+    load_texture(&renderer->assets, "assets/wall.jpg");
 }
 
 void render_init(Renderer* renderer) {
@@ -115,9 +78,11 @@ void render_init(Renderer* renderer) {
         return;
     }
 
-    init_render_data(renderer);
-    render_init_buffers(renderer);
-    render_init_shader(renderer);
+
+    init_data(renderer);
+    init_buffers(renderer);
+    init_shader(renderer);
+    init_texture(renderer);
 
     fprintf(stdout, "Successfully initialized OpenGL Renderer!\n");
 }
@@ -125,6 +90,7 @@ void render_init(Renderer* renderer) {
 void renderer_draw(Renderer* renderer) {
     render_clear(renderer);
     shader_use(&renderer->shader);
+    glBindTexture(GL_TEXTURE_2D, renderer->assets.texture);
     glBindVertexArray(renderer->buffers.VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }

@@ -14,7 +14,7 @@ set(BIN_DIR "${CMAKE_SOURCE_DIR}/bin")
 file(GLOB_RECURSE SRC_FILES "${SRC_DIR}/*.c" "${ENGINE_DIR}/*.c")
 file(GLOB_RECURSE HEADER_FILES "${SRC_DIR}/*.h" "${ENGINE_DIR}/*.h")
 
-include_directories(${INCLUDE_DIR} ${ENGINE_DIR})
+include_directories(${INCLUDE_DIR} ${ENGINE_DIR} ${LIB_DIR})
 
 add_executable(${PROJECT_NAME} ${SRC_FILES} ${HEADER_FILES})
 
