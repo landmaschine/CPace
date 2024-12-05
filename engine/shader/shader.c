@@ -1,5 +1,6 @@
 #include "shader.h"
 #include "glad/glad.h"
+#include "math/vec2.h"
 
 void compile_shaders(Shader* shader, const char* vertexCode, const char* fragmentCode) {
     unsigned int vertex, fragment;
@@ -106,4 +107,8 @@ void shader_setInt(Shader* shader, const char* name, int value) {
 
 void shader_setFloat(Shader* shader, const char* name, float value) {
     glUniform1f(glGetUniformLocation(shader->ID, name), value);
+}
+
+void shader_setVec2(Shader* shader, const char* name, Vec2 a) {
+    glUniform2f(glGetUniformLocation(shader->ID, name), a.x, a.y);
 }

@@ -18,8 +18,8 @@ void shutdown(Engine* engine) {
     fprintf(stdout, "Exit\n");
 }
 
-void render(Engine* engine) {
-    renderer_draw(&engine->renderer);
+void render(Engine* engine, Input* input) {
+    renderer_draw(&engine->renderer, &engine->input);
     glfwSwapBuffers(engine->window.window);
 } 
 
@@ -28,7 +28,7 @@ void update(Engine* engine) {
 }
 
 void input(Engine* engine) {
-    process_input(&engine->window);
+    process_input(&engine->window, &engine->input);
 }
 
 void run(Engine* engine) {
@@ -39,7 +39,7 @@ void run(Engine* engine) {
     while(!glfwWindowShouldClose(engine->window.window)) {
         input(engine);
         update(engine);
-        render(engine);
+        render(engine, &engine->input);
     }
     shutdown(engine);
 }

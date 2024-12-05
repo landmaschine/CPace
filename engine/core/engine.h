@@ -7,6 +7,7 @@
 typedef struct Engine_t {
     Window window;
     Renderer renderer;
+    Input input;
 } Engine;
 
 void run(Engine* engine);

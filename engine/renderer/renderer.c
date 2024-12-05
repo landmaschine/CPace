@@ -65,7 +65,7 @@ void renderer_shutdown(Renderer* renderer) {
 }
 
 void init_texture(Renderer* renderer) {
-    load_texture(&renderer->assets, "assets/wall.jpg");
+    load_texture(&renderer->assets, "assets/SpaceShipV1.png");
 }
 
 void render_init(Renderer* renderer) {
@@ -78,7 +78,6 @@ void render_init(Renderer* renderer) {
         return;
     }
 
-
     init_data(renderer);
     init_buffers(renderer);
     init_shader(renderer);
@@ -87,7 +86,7 @@ void render_init(Renderer* renderer) {
     fprintf(stdout, "Successfully initialized OpenGL Renderer!\n");
 }
 
-void renderer_draw(Renderer* renderer) {
+void renderer_draw(Renderer* renderer, Input* input) {
     render_clear(renderer);
     shader_use(&renderer->shader);
     glBindTexture(GL_TEXTURE_2D, renderer->assets.texture);
