@@ -22,7 +22,6 @@ void load_texture(Assets* assets, const char* texPath) {
         glGenerateMipmap(GL_TEXTURE_2D);
         assets->height = height;
         assets->width = width;
-
     } else {
         LOGERR("Failed to load texture");
     }

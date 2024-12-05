@@ -65,7 +65,7 @@ void renderer_shutdown(Renderer* renderer) {
 }
 
 void init_texture(Renderer* renderer) {
-    load_texture(&renderer->assets, "assets/SpaceShipV1.png");
+    load_texture(&renderer->assets, "assets/spacefighter.png");
 }
 
 void render_init(Renderer* renderer) {
