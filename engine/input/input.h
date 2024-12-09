@@ -2,11 +2,10 @@
 #include "core/common.h"
 #include "renderer/window.h"
 
-#include "math/vec2/vec2.h"
 
 typedef struct Input_t {
-    Vec2 vert;
-    Vec2 hori;
+    glm::vec2 vert;
+    glm::vec2 hori;
 } Input;
 
 void process_input(Window* window, Input* input);

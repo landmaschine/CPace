@@ -8,5 +8,6 @@
 #include "debug.h"
 #include "utils.h"
 
-//math
-#include "../math/cpmath.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
