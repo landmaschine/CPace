@@ -4,6 +4,13 @@
 #include "asset_manager/asset_manager.h"
 #include "input/input.h"
 
+typedef struct render_stats_t {
+    float frametime;
+    float mem;
+    float shadertime;
+    float cputime;
+} RenderStats;
+
 typedef struct dynamic_array_t {
     void* data;
     int length;
@@ -25,6 +32,7 @@ typedef struct Renderer_t {
     Shader shader;
     RenderBuffers buffers;
     Assets assets;
+    RenderStats render_stats;
 } Renderer;
 
 void render_init(Renderer* renderer);

@@ -1,5 +1,6 @@
 #include "renderer.h"
 #include "glad/glad.h"
+#include <time.h>
 
 void init_data(Renderer* renderer) {
     float init_vertices[12 + 12 + 8] = {
@@ -65,7 +66,7 @@ void renderer_shutdown(Renderer* renderer) {
 }
 
 void init_texture(Renderer* renderer) {
-    load_texture(&renderer->assets, "assets/spacefighter.png");
+    load_texture(&renderer->assets, "assets/Spacefighter.png");
 }
 
 void render_init(Renderer* renderer) {
@@ -77,6 +78,9 @@ void render_init(Renderer* renderer) {
         exit(1);
         return;
     }
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     init_data(renderer);
     init_buffers(renderer);
