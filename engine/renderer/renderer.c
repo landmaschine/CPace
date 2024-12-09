@@ -88,6 +88,7 @@ void render_init(Renderer* renderer) {
     init_texture(renderer);
 
     fprintf(stdout, "Successfully initialized OpenGL Renderer!\n");
+
 }
 
 void renderer_draw(Renderer* renderer, Input* input) {

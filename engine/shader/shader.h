@@ -1,6 +1,6 @@
 #pragma once
 #include "core/common.h"
-#include "math/vec2.h"
+#include "math/vec2/vec2.h"
 
 typedef struct Shader_t {
     unsigned int ID;

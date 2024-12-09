@@ -1,6 +1,5 @@
 #include "shader.h"
 #include "glad/glad.h"
-#include "math/vec2.h"
 
 void compile_shaders(Shader* shader, const char* vertexCode, const char* fragmentCode) {
     unsigned int vertex, fragment;
